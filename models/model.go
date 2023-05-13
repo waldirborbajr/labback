@@ -21,14 +21,14 @@ func ConnectDatabase() error {
 
 type Bank struct {
 	Id      int    `json:"id"`
-	Bank    string `json:"bank"`
+	Name    string `json:"name"`
 	Agency  string `json:"agency"`
 	Account string `json:"account"`
 }
 
 func GetBanks(count int) ([]Bank, error) {
 
-	rows, err := DB.Query("SELECT id, bank, agency, account from bank LIMIT " + strconv.Itoa(count))
+	rows, err := DB.Query("SELECT id, name, agency, account from bank LIMIT " + strconv.Itoa(count))
 
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func GetBanks(count int) ([]Bank, error) {
 
 	for rows.Next() {
 		singleBank := Bank{}
-		err = rows.Scan(&singleBank.Id, &singleBank.Bank, &singleBank.Agency, &singleBank.Account)
+		err = rows.Scan(&singleBank.Id, &singleBank.Name, &singleBank.Agency, &singleBank.Account)
 
 		if err != nil {
 			return nil, err
@@ -60,7 +60,7 @@ func GetBanks(count int) ([]Bank, error) {
 
 func GetBankByID(id string) (Bank, error) {
 
-	stmt, err := DB.Prepare("SELECT id, bank, agency, account from bank WHERE id = ?")
+	stmt, err := DB.Prepare("SELECT id, name, agency, account from bank WHERE id = ?")
 
 	if err != nil {
 		return Bank{}, err
@@ -68,7 +68,7 @@ func GetBankByID(id string) (Bank, error) {
 
 	bank := Bank{}
 
-	sqlErr := stmt.QueryRow(id).Scan(&bank.Id, &bank.Bank, &bank.Agency, &bank.Account)
+	sqlErr := stmt.QueryRow(id).Scan(&bank.Id, &bank.Name, &bank.Agency, &bank.Account)
 
 	if sqlErr != nil {
 		if sqlErr == sql.ErrNoRows {
@@ -86,7 +86,7 @@ func AddBank(newBank Bank) (bool, error) {
 		return false, err
 	}
 
-	stmt, err := tx.Prepare("INSERT INTO bank (bank, agency, account) VALUES (?, ?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO bank (name, agency, account) VALUES (?, ?, ?)")
 
 	if err != nil {
 		return false, err
@@ -94,7 +94,7 @@ func AddBank(newBank Bank) (bool, error) {
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(newBank.Bank, newBank.Agency, newBank.Account)
+	_, err = stmt.Exec(newBank.Name, newBank.Agency, newBank.Account)
 
 	if err != nil {
 		return false, err
@@ -112,7 +112,7 @@ func UpdateBank(ourBank Bank, id int) (bool, error) {
 		return false, err
 	}
 
-	stmt, err := tx.Prepare("UPDATE bank SET bank = ?, agency = ?, account = ? WHERE Id = ?")
+	stmt, err := tx.Prepare("UPDATE bank SET name = ?, agency = ?, account = ? WHERE Id = ?")
 
 	if err != nil {
 		return false, err
@@ -120,7 +120,7 @@ func UpdateBank(ourBank Bank, id int) (bool, error) {
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(ourBank.Bank, ourBank.Agency, ourBank.Account, id)
+	_, err = stmt.Exec(ourBank.Name, ourBank.Agency, ourBank.Account, id)
 
 	if err != nil {
 		return false, err

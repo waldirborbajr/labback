@@ -81,7 +81,7 @@ func getBankByID(c *gin.Context) {
 
 	checkErr(err)
 	// if the name is blank we can assume nothing is found
-	if bank.Bank == "" {
+	if bank.Name == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No Records Found"})
 		return
 	} else {
