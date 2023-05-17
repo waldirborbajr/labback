@@ -27,9 +27,7 @@ type Bank struct {
 }
 
 func GetBanks(count int) ([]Bank, error) {
-
 	rows, err := DB.Query("SELECT id, name, agency, account from bank LIMIT " + strconv.Itoa(count))
-
 	if err != nil {
 		return nil, err
 	}
@@ -59,9 +57,7 @@ func GetBanks(count int) ([]Bank, error) {
 }
 
 func GetBankByID(id string) (Bank, error) {
-
 	stmt, err := DB.Prepare("SELECT id, name, agency, account from bank WHERE id = ?")
-
 	if err != nil {
 		return Bank{}, err
 	}
@@ -80,14 +76,12 @@ func GetBankByID(id string) (Bank, error) {
 }
 
 func AddBank(newBank Bank) (bool, error) {
-
 	tx, err := DB.Begin()
 	if err != nil {
 		return false, err
 	}
 
 	stmt, err := tx.Prepare("INSERT INTO bank (name, agency, account) VALUES (?, ?, ?)")
-
 	if err != nil {
 		return false, err
 	}
@@ -106,14 +100,12 @@ func AddBank(newBank Bank) (bool, error) {
 }
 
 func UpdateBank(ourBank Bank, id int) (bool, error) {
-
 	tx, err := DB.Begin()
 	if err != nil {
 		return false, err
 	}
 
 	stmt, err := tx.Prepare("UPDATE bank SET name = ?, agency = ?, account = ? WHERE Id = ?")
-
 	if err != nil {
 		return false, err
 	}
@@ -132,15 +124,12 @@ func UpdateBank(ourBank Bank, id int) (bool, error) {
 }
 
 func DeleteBank(bankId int) (bool, error) {
-
 	tx, err := DB.Begin()
-
 	if err != nil {
 		return false, err
 	}
 
 	stmt, err := DB.Prepare("DELETE from bank where id = ?")
-
 	if err != nil {
 		return false, err
 	}

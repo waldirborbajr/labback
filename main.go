@@ -2,31 +2,24 @@ package main
 
 import (
 	"fmt"
+	"localhost/labback/models"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
-
-	"localhost/labback/models"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-
 	err := models.ConnectDatabase()
 	checkErr(err)
 
 	r := gin.Default()
 
-	// CORS for https://foo.com and https://github.com origins, allowing:
-	// - PUT and PATCH methods
-	// - Origin header
-	// - Credentials share
-	// - Preflight requests cached for 12 hours
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"*"},
 		AllowHeaders:     []string{"*"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -49,8 +42,6 @@ func main() {
 		v1.OPTIONS("bank", options)
 	}
 
-	// By default it serves on :8080 unless a
-	// PORT environment variable was defined.
 	log.Fatal(r.Run(":9090"))
 }
 
@@ -59,7 +50,6 @@ func alive(c *gin.Context) {
 }
 
 func getBanks(c *gin.Context) {
-
 	banks, err := models.GetBanks(10)
 
 	checkErr(err)
@@ -73,7 +63,6 @@ func getBanks(c *gin.Context) {
 }
 
 func getBankByID(c *gin.Context) {
-
 	// grab the Id of the record want to retrieve
 	id := c.Param("id")
 
@@ -90,7 +79,6 @@ func getBankByID(c *gin.Context) {
 }
 
 func addBank(c *gin.Context) {
-
 	var json models.Bank
 
 	if err := c.ShouldBindJSON(&json); err != nil {
@@ -108,7 +96,6 @@ func addBank(c *gin.Context) {
 }
 
 func updateBank(c *gin.Context) {
-
 	var json models.Bank
 
 	if err := c.ShouldBindJSON(&json); err != nil {
@@ -134,9 +121,7 @@ func updateBank(c *gin.Context) {
 }
 
 func deleteBank(c *gin.Context) {
-
 	bankId, err := strconv.Atoi(c.Param("id"))
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 	}
@@ -151,7 +136,6 @@ func deleteBank(c *gin.Context) {
 }
 
 func options(c *gin.Context) {
-
 	ourOptions := "HTTP/1.1 200 OK\n" +
 		"Allow: GET,POST,PUT,DELETE,OPTIONS\n" +
 		"Access-Control-Allow-Origin: http://127.0.0.1:8080\n" +
